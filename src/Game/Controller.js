@@ -9,7 +9,6 @@ export default class Controller {
   }
 
   updateView() {
-    console.log(321)
     const state = this.game.getState();
     this.view.renderMainScreen(state)
   }

@@ -18,6 +18,12 @@ export default class Game {
         y: 0
       }
     ]
+    this.movement = {
+      left: true,
+      right: true,
+      up: true,
+      down: true
+    }
   }
 
   getState() {
@@ -62,39 +68,80 @@ export default class Game {
     return playField;
   }
 
-  moveDown() {
-    this.activePosition.y += 1
-    if ( !this.hasCollision()) {
-      console.log("you die")
-      this.activePosition.y -= 1
+  reinitDirections() {
+    this.movement = {
+      left: true,
+      right: true,
+      up: true,
+      down: true
     }
-    this.updateSnake()
+  }
+
+  movementDirections(item) {
+    this.reinitDirections()
+    switch (item) {
+      case 'left':
+        this.movement.right = false
+      break;
+      case 'right':
+        this.movement.left = false
+      break;
+      case 'up':
+        this.movement.down = false
+      break;
+      case 'down':
+        this.movement.up = false
+      break;
+      default:
+      break;
+    }
+  }
+
+  moveDown() {
+    if ( this.movement.down) {
+      this.activePosition.y += 1
+      if ( !this.hasCollision()) {
+        console.log("you die")
+        this.activePosition.y -= 1
+      }
+      this.movementDirections('down')
+      this.updateSnake()
+    }
   }
 
   moveUp() {
-    this.activePosition.y -= 1
-    if ( !this.hasCollision()) {
-      console.log("you die")
-      this.activePosition.y += 1
+    if ( this.movement.up) {
+      this.activePosition.y -= 1
+      if ( !this.hasCollision()) {
+        console.log("you die")
+        this.activePosition.y += 1
+      }
+      this.movementDirections('up')
+      this.updateSnake()
     }
-    this.updateSnake()
   }
 
   moveLeft() {
-    this.activePosition.x -= 1
-    if ( !this.hasCollision()) {
-      console.log("you die")
-      this.activePosition.x += 1
+    if ( this.movement.left) {
+      this.activePosition.x -= 1
+      if ( !this.hasCollision()) {
+        console.log("you die")
+        this.activePosition.x += 1
+      }
+      this.movementDirections('left')
+      this.updateSnake()
     }
-    this.updateSnake()
   }
 
   moveRight() {
-    this.activePosition.x += 1
-    if ( !this.hasCollision()) {
-      console.log("you die")
-      this.activePosition.x -= 1
+    if ( this.movement.right) {
+      this.activePosition.x += 1
+      if ( !this.hasCollision()) {
+        console.log("you die")
+        this.activePosition.x -= 1
+      }
+      this.movementDirections('right')
+      this.updateSnake()
     }
-    this.updateSnake()
   }
 }
