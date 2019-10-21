@@ -17,13 +17,28 @@ export default class Game {
         x: 0,
         y: 0
       }
-    ]
+    ],
+    this.showPoint = true,
+    this.point = {x: 15, y: 15},
     this.movement = {
       left: true,
       right: true,
       up: true,
       down: true
     }
+  }
+
+  randomPoint() {
+    this.showPoint = true
+    let point = {
+      x: Math.floor(Math.random() * 20),
+      y: Math.floor(Math.random() * 20)
+    }
+    this.point = point
+  }
+
+  removePoint() {
+    this.showPoint = false
   }
 
   getState() {
@@ -33,8 +48,17 @@ export default class Game {
       playField[snake[i].y][snake[i].x] = 1  
     }
     return {
-      playField
+      playField,
+      showPoint: this.showPoint,
+      point: this.point
     }
+  }
+
+  snakeGrow() {
+    this.removePoint()
+    const snake = this.snake;
+    let snakePart = snake[snake.length - 1]
+    snake.push(snakePart)
   }
 
   updateSnake() {
@@ -48,9 +72,12 @@ export default class Game {
   }
 
   hasCollision() {
-    const { x, y } = this.snake[0]
+    const { x, y } = this.activePosition
     const length = this.playField.length
     if ( (x >= 0 && x < length && y >= 0 && y < length )) {
+      if ( x == this.point.x && y == this.point.y) {
+        this.snakeGrow()
+      }
       return true
     }
     return false

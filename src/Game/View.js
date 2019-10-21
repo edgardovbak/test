@@ -42,7 +42,7 @@ export default class View {
     this.context.clearRect(0,0, this.width, this.height)
   }
 
-  renderPlayField ({playField}) {
+  renderPlayField ({playField, point, showPoint}) {
     for (let y = 0; y < playField.length; y++) {
       const line = playField[y];
       
@@ -64,6 +64,17 @@ export default class View {
       this.context.lineWidth = this.playFieldBorderWidth;
       this.context.strokeRect(0,0, this.playFieldWidth, this.playFieldHeight)
     }
+
+    if (showPoint) {
+      this.renderBlock(
+        this.playFieldX + (point.x * this.blockWidth), 
+        this.playFieldY + (point.y * this.blockHeight), 
+        this.blockWidth, 
+        this.blockHeight,
+        View.colors[2] 
+      )
+    }
+    
 
     this.context.strokeStyle = "white";
     this.context.lineWidth = this.playFieldBorderWidth;
