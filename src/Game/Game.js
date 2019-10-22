@@ -18,7 +18,8 @@ export default class Game {
         y: 0
       }
     ],
-    this.showPoint = true,
+    this.showPoint = false,
+    this.isGameOver = false,
     this.point = {x: 15, y: 15},
     this.movement = {
       left: true,
@@ -50,7 +51,8 @@ export default class Game {
     return {
       playField,
       showPoint: this.showPoint,
-      point: this.point
+      point: this.point,
+      isGameOver: this.isGameOver
     }
   }
 
@@ -74,12 +76,20 @@ export default class Game {
   hasCollision() {
     const { x, y } = this.activePosition
     const length = this.playField.length
+    let snake = this.snake
     if ( (x >= 0 && x < length && y >= 0 && y < length )) {
       if ( x == this.point.x && y == this.point.y) {
         this.snakeGrow()
       }
+      for (let i = 3; i < snake.length; i++) {
+        if ( snake[i].x == x && snake[i].y == y ) {
+          this.isGameOver = true
+          return false
+        }
+      }
       return true
     }
+    this.isGameOver = true
     return false
   }
 

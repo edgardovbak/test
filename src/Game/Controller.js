@@ -4,6 +4,7 @@ export default class Controller {
     this.view = view
     this.isPlaying = false;
     this.intervalId = null;
+    this.pointInterval = 0;
 
     document.addEventListener('keydown', this.handleKeyDown.bind(this))
 
@@ -12,18 +13,26 @@ export default class Controller {
 
   update() {
     const {left, right, up, down } = this.game.movement
-    console.log(left, right, up, down)
     if ( !left ) {
-      this.game.moveLeft()
-    } else if ( !right ) {
       this.game.moveRight()
+    } else if ( !right ) {
+      this.game.moveLeft()
     } else if ( !up ) {
-      this.game.moveUp()
-    } else if ( !down ) {
       this.game.moveDown()
+    } else if ( !down ) {
+      this.game.moveUp()
     }
-    console.log(this)
-    this.updaeView()
+    this.pointStatus()
+    this.updateView()
+  }
+
+  pointStatus() {
+    this.pointInterval += 1;
+    if ( this.pointInterval > 5 ) {
+      this.pointInterval = 0
+      this.game.removePoint()
+      this.game.randomPoint()
+    }
   }
 
   startTimer() {
@@ -55,7 +64,12 @@ export default class Controller {
 
   updateView() {
     const state = this.game.getState();
-    this.view.renderMainScreen(state)
+    if (state.isGameOver) {
+      this.stopTimer()
+    } else {
+      this.view.renderMainScreen(state)
+    }
+    
   }
 
   handleKeyDown(event) {
