@@ -1,45 +1,62 @@
 export default class Game {
   constructor() {
-    this.playField = this.createPlayfield(),
-    this.activePosition = {
-      x: 0,
-      y: 0
+    this.points = {
+      '1': 10,
+      '2': 30,
+      '3': 50,
+      '4': 70
     },
-    this.snake = [{
-        x: 0,
-        y: 0
-      },
-      {
-        x: 0,
-        y: 0
-      },
-        {
-        x: 0,
-        y: 0
-      }
-    ],
+    this.playFieldLength = 20
+    
+    this.reset()
+  }
+
+  reset() {
     this.showPoint = false,
     this.isGameOver = false,
     this.point = {x: 15, y: 15},
+    this.level = 0,
+    this.score = 0,
+    this.pointInterval = null,
     this.movement = {
-      left: true,
+      left: false,
       right: true,
       up: true,
       down: true
     }
+    this.playField = this.createPlayfield(),
+    this.activePosition = {
+      x: 10,
+      y: 10
+    },
+    this.snake = [{
+        x: 10,
+        y: 10
+      },
+      {
+        x: 10,
+        y: 10
+      }
+    ]
   }
 
   randomPoint() {
     this.showPoint = true
     let point = {
-      x: Math.floor(Math.random() * 20),
-      y: Math.floor(Math.random() * 20)
+      x: Math.floor(Math.random() * this.playFieldLength),
+      y: Math.floor(Math.random() * this.playFieldLength)
     }
     this.point = point
+    if (!this.intervalId) {
+      this.pointInterval = setInterval(() => {}, 5000)
+    }
   }
 
   removePoint() {
     this.showPoint = false
+    if (this.intervalId) {
+      clearInterval(this.pointInterval)
+    }
   }
 
   getState() {
@@ -58,13 +75,20 @@ export default class Game {
 
   snakeGrow() {
     this.removePoint()
-    const snake = this.snake;
+    const snake = this.snake
+    this.updateScore(1)
     let snakePart = snake[snake.length - 1]
     snake.push(snakePart)
   }
 
+  updateScore(pointNumber) {
+    if (pointNumber > 0) {
+      this.score += Game.points[pointNumber] * (this.level + 1);
+    }
+  }
+
   updateSnake() {
-    const snake = this.snake;
+    const snake = this.snake
     const { x, y } = this.activePosition
     snake.pop()
     snake.unshift({
@@ -94,15 +118,15 @@ export default class Game {
   }
 
   createPlayfield() {
-    const playField = [];
-    for (let y = 0; y < 20; y++) {
+    const playField = []
+    for (let y = 0; y < this.playFieldLength; y++) {
       playField[y] = []
       
-      for (let x = 0; x < 20; x++) {
+      for (let x = 0; x < this.playFieldLength; x++) {
         playField[y][x] = 0
       }
     }
-    return playField;
+    return playField
   }
 
   reinitDirections() {
@@ -119,18 +143,18 @@ export default class Game {
     switch (item) {
       case 'left':
         this.movement.right = false
-      break;
+      break
       case 'right':
         this.movement.left = false
-      break;
+      break
       case 'up':
         this.movement.down = false
-      break;
+      break
       case 'down':
         this.movement.up = false
-      break;
+      break
       default:
-      break;
+      break
     }
   }
 

@@ -7,8 +7,9 @@ export default class Controller {
     this.pointInterval = 0;
 
     document.addEventListener('keydown', this.handleKeyDown.bind(this))
+    document.addEventListener('keyup', this.handleKeyUp.bind(this));
 
-    this.view.renderMainScreen(this.game.getState())
+    this.view.renderStartScreen()
   }
 
   update() {
@@ -22,24 +23,15 @@ export default class Controller {
     } else if ( !down ) {
       this.game.moveUp()
     }
-    this.pointStatus()
     this.updateView()
   }
 
-  pointStatus() {
-    this.pointInterval += 1;
-    if ( this.pointInterval > 5 ) {
-      this.pointInterval = 0
-      this.game.removePoint()
-      this.game.randomPoint()
-    }
-  }
-
   startTimer() {
+    const speed = 1000 - this.game.getState().level * 100
     if (!this.intervalId) {
       this.intervalId = setInterval(() => {
         this.update()
-      }, 1000)
+      }, speed > 0 ? speed : 300)
     }
   }
 
@@ -53,45 +45,77 @@ export default class Controller {
   play() {
     this.isPlaying = true;
     this.startTimer()
-    this.updaeView()
+    this.updateView()
+    this.game.randomPoint()
   }
 
   pause() {
     this.isPlaying = false;
     this.stopTimer()
-    this.updaeView()
+    this.updateView()
+    this.game.removePoint()
   }
 
   updateView() {
     const state = this.game.getState();
     if (state.isGameOver) {
       this.stopTimer()
+      this.view.renderEndScreen(state);
+    }  else if (!this.isPlaying) {
+      this.view.renderPauseScreen()
     } else {
       this.view.renderMainScreen(state)
     }
-    
   }
 
   handleKeyDown(event) {
     switch (event.keyCode) {
       case 37:
+        this.stopTimer()
         this.game.moveLeft()
         this.updateView()
         break;
       case 38:
+        this.stopTimer()
         this.game.moveUp()
         this.updateView()
         break;
       case 39:
+        this.stopTimer()
         this.game.moveRight()
         this.updateView()
         break;
       case 40:
+        this.stopTimer()
         this.game.moveDown()
         this.updateView()
+        break;
+      case 13:
+        const state = this.game.getState()
+        if (state.isGameOver) {
+          this.reset()
+        }else if (this.isPlaying) {
+          this.pause()
+        } else {
+          this.play()
+        }
         break;
       default:
         break;
     }
+  }
+
+  handleKeyUp(event) {
+    console.log(213)
+    switch (event.keyCode) {
+      case 40:
+      case 39:
+      case 38:
+      case 37:
+          this.startTimer()
+        break;
+      default:
+        break;
+      }
   }
 }
